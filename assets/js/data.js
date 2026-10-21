@@ -26,7 +26,7 @@ window.PROJECTS = [
     brand: '트웨니스',
     year: '2026',
     period: '2026.03 – 2026.07',
-    role: '그로스마케터 · 소재 운영 총괄',
+    role: '콘텐츠마케터 · 소재 운영 총괄',
     roleDetail: '소재 기획·제작·회고 전 과정 · 메시지 A/B · 소재 보고용 사이트 제작',
     cats: ['content', 'performance'],
     channels: ['Meta', '네이버', 'YouTube PPL'],
@@ -94,7 +94,7 @@ window.PROJECTS = [
     brand: '트웨니스',
     year: '2026',
     period: '2026.03 – 2026.07',
-    role: '그로스마케터 · 데이터 분석',
+    role: '콘텐츠마케터 · 데이터 분석',
     roleDetail: '매칭 로그 감사 · LTV/CAC 가이드 · CPS 기준 예산 재배분 · UTM 측정 체계 · CRM 수정 제안',
     cats: ['performance'],
     channels: ['Meta', '네이버', '자사 API', 'CRM'],
@@ -1170,7 +1170,7 @@ window.PROFILE = {
   email: 'uiop3485@naver.com',
   socials: [],
   experience: [
-    { co: '트웨니스 (㈜큐피스트)', team: '마케팅팀 · 그로스마케터', period: '2026.03 – 2026.07', note: '메타·네이버 광고 운영 · 성과측정 시스템 · 유닛 이코노믹스' },
+    { co: '트웨니스 (㈜큐피스트)', team: '마케팅팀 · 콘텐츠마케터', period: '2026.03 – 2026.07', note: '메타·네이버 광고 운영 · 성과측정 시스템 · 유닛 이코노믹스' },
     { co: '뷰스컴퍼니', team: '마케팅1팀 · AE', period: '2024.11 – 2026.03', note: 'VDL · 필킨 · 차앤박 · 어퓨 — 바이럴 · 퍼포먼스 소재 · IMC' },
     { co: '노랑풍선', team: '마케팅기획팀 · 콘텐츠마케팅팀 · 사원', period: '2023.08 – 2024.11', note: 'SNS 기획·운영 · 오프라인 행사 · 프리미엄 TF · 인플루언서' },
     { co: '챔프스터디 (해커스)', team: '뉴미디어홍보관리2팀 · 사원', period: '2022.10 – 2023.08', note: '유튜브 콘텐츠 기획 · 채널 운영 · SEO' },
@@ -1222,7 +1222,7 @@ window.FEATURED = [
 ];
 // 아카이브 회사별 그룹 (위에서부터 노출 순서)
 window.COMPANY_GROUPS = [
-  { id: '트웨니스', name: 'Twennies', kr: '트웨니스 (㈜큐피스트)', role: '그로스마케터', period: '2026.03 – 2026.07' },
+  { id: '트웨니스', name: 'Twennies', kr: '트웨니스 (㈜큐피스트)', role: '콘텐츠마케터', period: '2026.03 – 2026.07' },
   { id: '뷰스컴퍼니', name: 'Beaus Company', kr: '뷰스컴퍼니', role: 'AE · 마케팅1팀', period: '2024.11 – 2026.03' },
   { id: '노랑풍선', name: 'Yellow Balloon', kr: '노랑풍선', role: '마케팅기획팀 · 콘텐츠마케팅팀', period: '2023.08 – 2024.11' },
   { id: '챔프스터디', name: 'Champstudy', kr: '챔프스터디 (해커스)', role: '뉴미디어홍보관리2팀', period: '2022.10 – 2023.08' },

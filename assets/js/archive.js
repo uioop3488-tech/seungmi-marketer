@@ -31,11 +31,10 @@
   const itemHTML = (p, i) => `
     <a class="sheet ed-item" href="project.html?p=${p.slug}" data-hover-video>
       ${sheetTab(p, i)}
-      <div class="ed-media reveal">${coverHTML(p)}</div>
+      <div class="ed-media reveal">${coverHTML(p)}${p.headline ? `<span class="ed-hover" aria-hidden="true">${esc(p.headline)}</span>` : ''}</div>
       <div class="ed-cap">
         <h5 class="ed-title">${esc(p.title)}</h5>
         <p class="ed-hl">${esc(p.headline)}</p>
-        <p class="ed-role">${esc(p.role)}</p>
         <p class="ed-imp">${esc(p.impact || '')}</p>
         <span class="ed-cta mono">Read the case →</span>
       </div>
@@ -79,7 +78,7 @@
     }
     const tabColor = ci % 2 ? 'pink' : 'blue';
     return `
-    <section class="chapter">
+    <section class="chapter" id="ch-${pad(ci + 1)}">
       <div class="ftabs" aria-hidden="true"><span class="ftab">Chapter ${pad(ci + 1)}</span><span class="ftab ${tabColor}">${esc(g.kr)}</span>${brands.length > 1 ? `<span class="ftab ${ci % 2 ? 'blue' : 'pink'}">${brands.length} brands</span>` : ''}</div>
       <header class="ch-head reveal">
         <span class="ch-no">${pad(ci + 1)}</span>
@@ -96,18 +95,18 @@
   const rowHTML = (p, i) => `
     <a class="row" href="project.html?p=${p.slug}" data-i="${i}">
       <span class="t">${esc(p.title)}</span>
-      <span class="muted">${esc(p.role)}</span>
+      <span class="muted">${esc(p.headline)}</span>
       <span class="y mono">${esc(p.year)}</span>
     </a>`;
   const index = document.querySelector('.index-body');
-  index.innerHTML = window.COMPANY_GROUPS.map((g) => {
+  index.innerHTML = window.COMPANY_GROUPS.map((g, ci) => {
     const items = P.map((p, i) => [p, i]).filter(([p]) => p.company === g.id);
     if (!items.length) return '';
     const brands = window.BRAND_ORDER.filter((b) => items.some(([p]) => p.brand === b));
     const body = brands.length
       ? brands.map((b) => `<div class="brand-head"><span>${esc(b)}</span></div>` + items.filter(([p]) => p.brand === b).map(([p, i]) => rowHTML(p, i)).join('')).join('')
       : items.map(([p, i]) => rowHTML(p, i)).join('');
-    return `<div class="group-head"><span class="g-name">${esc(g.name)}</span><span class="g-meta"><span>${esc(g.kr)}</span><span class="mono">${esc(g.period)}</span></span></div>` + body;
+    return `<div class="group-head" id="ls-${pad(ci + 1)}"><span class="g-name">${esc(g.name)}</span><span class="g-meta"><span>${esc(g.kr)}</span><span class="mono">${esc(g.period)}</span></span></div>` + body;
   }).join('');
 
   // 브랜드 이름이 흐르는 띠
@@ -146,18 +145,53 @@
     const b = e.target.closest('button');
     if (b) setView(b.dataset.view);
   });
+  // 회사 폴더 탭: 누르면 해당 회사 챕터로 이동 (그리드/리스트 모두)
+  const coTabs = document.querySelector('.co-tabs');
+  const groups = window.COMPANY_GROUPS.map((g, ci) => ({ g, n: pad(ci + 1) }))
+    .filter(({ g }) => P.some((p) => p.company === g.id));
+  coTabs.innerHTML = groups.map(({ g, n }, k) =>
+    `<a class="ftab ${['blue', 'pink', 'green'][k % 3]}" href="#ch-${n}" data-ch="${n}">${esc(g.id)}</a>`).join('');
+  const chapterEl = (n) => document.getElementById((archive.dataset.view === 'index' ? 'ls-' : 'ch-') + n);
+  const goChapter = (n) => {
+    const el = chapterEl(n);
+    if (el) el.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  };
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[data-ch]');
+    if (!a) return;
+    e.preventDefault();
+    goChapter(a.dataset.ch);
+  });
+  // 지금 보고 있는 회사 탭 표시
+  const header = document.querySelector('.site-header');
+  const markTab = () => {
+    document.documentElement.style.setProperty('--hdr', header.offsetHeight + 'px');
+    const line = header.offsetHeight + coTabs.offsetHeight + 80;
+    let cur = null;
+    groups.forEach(({ n }) => { const el = chapterEl(n); if (el && el.getBoundingClientRect().top <= line) cur = n; });
+    coTabs.querySelectorAll('a').forEach((a) => a.classList.toggle('on', a.dataset.ch === cur));
+  };
+  addEventListener('scroll', markTab, { passive: true });
+  addEventListener('resize', markTab);
+  toggle.addEventListener('click', () => requestAnimationFrame(markTab));
+  markTab();
+
   let savedView = 'grid';
   try { savedView = localStorage.getItem('archive-view') || 'grid'; } catch (e) {}
   setView(savedView === 'index' ? 'index' : 'grid');
 
   /* ---------- About ---------- */
   const pr = window.PROFILE;
-  document.querySelector('.xp').innerHTML = pr.experience.map((x) => `
+  document.querySelector('.xp').innerHTML = pr.experience.map((x) => {
+    const ch = groups.find(({ g }) => x.co.startsWith(g.id));
+    const co = ch ? `<a class="co-link" href="#ch-${ch.n}" data-ch="${ch.n}">${esc(x.co)}<span class="co-go" aria-hidden="true">→</span></a>` : esc(x.co);
+    return `
     <div class="xp-row">
-      <div class="co">${esc(x.co)}<span class="team">${esc(x.team)}</span></div>
+      <div class="co">${co}<span class="team">${esc(x.team)}</span></div>
       <div class="note">${esc(x.note)}</div>
       <div class="pd mono">${txt(x.period)}</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
   const li = (arr) => arr.map((a) => `<li><span>${esc(a.t)}</span><span>${esc(a.d)}</span></li>`).join('');
   document.querySelector('[data-edu]').innerHTML = li(pr.education) + li(pr.certs);
   document.querySelector('[data-act]').innerHTML = li(pr.activities);
@@ -304,8 +338,9 @@
     (window.PROFILE.education || []).forEach((ed) => {
       xp.insertAdjacentHTML('beforeend', `<div class="xp-row"><div class="co">${esc(ed.t)}<span class="team">학력</span></div><div class="note"></div><div class="pd mono">${esc(ed.d)}</div></div>`);
     });
+    // 최신순(미래 → 과거): Next 카드를 맨 위에
+    xp.insertAdjacentHTML('afterbegin', '<div class="xp-next"><strong>Next — 함께할 <em>팀?</em></strong><a class="mono" href="#contact">Contact →</a></div>');
     xp.insertAdjacentHTML('afterbegin', '<span class="xp-fill" aria-hidden="true"></span>');
-    xp.insertAdjacentHTML('beforeend', '<div class="xp-next"><strong>Next — 함께할 <em>팀?</em></strong><a class="mono" href="#contact">Contact →</a></div>');
     const rows = [...xp.querySelectorAll('.xp-row')];
     const draw = () => {
       const r = xp.getBoundingClientRect();
