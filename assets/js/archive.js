@@ -166,7 +166,8 @@
   const hero = document.querySelector('.hero');
   const playHero = () => hero.classList.add('play');
   const intro = document.querySelector('.intro');
-  if (!intro || intro.classList.contains('gone')) requestAnimationFrame(playHero);
+  if (!hero) { /* Hero 섹션 없음 */ }
+  else if (!intro || intro.classList.contains('gone')) requestAnimationFrame(playHero);
   else document.addEventListener('intro:leave', () => setTimeout(playHero, 450), { once: true });
 
   bindHoverVideos(document);

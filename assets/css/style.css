@@ -266,7 +266,7 @@ a:hover .ed-title { text-decoration: underline; text-decoration-thickness: 1px; 
 .view-toggle button[aria-pressed='true'] { background: var(--ink); color: var(--bg); }
 
 /* ---------- About ---------- */
-.about { padding-bottom: clamp(96px, 12vw, 200px); }
+.about { padding-top: clamp(40px, 6vw, 96px); padding-bottom: clamp(96px, 12vw, 200px); }
 .about-intro { display: grid; grid-template-columns: minmax(0, 1fr) clamp(180px, 22vw, 320px); gap: var(--gutter); align-items: end; }
 .about-lead { margin: 0; font-size: clamp(32px, 4.8vw, 80px); line-height: 1.14; letter-spacing: -0.05em; font-weight: 600; }
 .about-text { max-width: 56ch; margin: clamp(28px, 3vw, 44px) 0 0; font-size: 17px; line-height: 1.8; color: #33322f; }
