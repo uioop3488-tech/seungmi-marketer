@@ -315,6 +315,8 @@ a:hover .ed-title { text-decoration: underline; text-decoration-thickness: 1px; 
 .xp-row .note { font-size: 15px; color: #3b3a36; }
 .xp-row .pd { text-align: right; }
 .facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px var(--gutter); margin-top: clamp(56px, 7vw, 104px); }
+.facts-sec { padding-bottom: clamp(96px, 12vw, 180px); }
+.facts-sec .facts { margin-top: 0; }
 .facts h4 { padding-bottom: 10px; border-bottom: 1px solid var(--ink); }
 .facts ul { list-style: none; margin: 0; padding: 0; }
 .facts li { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 14px; }

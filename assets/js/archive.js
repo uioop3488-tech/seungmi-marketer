@@ -279,7 +279,7 @@
     ind.style.left = a.offsetLeft + 'px';
     ind.style.width = a.offsetWidth + 'px';
   };
-  const ids = ['work', 'archive', 'about', 'contact'];
+  const ids = ['about', 'work', 'archive', 'contact'];
   const secs = ids.map((id) => document.getElementById(id)).filter(Boolean);
   const pickActive = () => {
     let cur = null;
