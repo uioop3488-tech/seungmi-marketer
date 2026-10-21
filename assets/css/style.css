@@ -178,7 +178,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   background: var(--bg); border-bottom: 1px solid var(--ink);
 }
 .co-tabs::-webkit-scrollbar { display: none; }
-.co-tabs .ftab { flex: none; height: 40px; font-size: 14px; transition: transform .2s var(--ease), background .2s, color .2s; }
+.co-tabs .ftab { flex: none; height: 40px; font-family: var(--sans); font-size: 14px; font-weight: 600; transition: transform .2s var(--ease), background .2s, color .2s; }
 .co-tabs .ftab:hover { transform: translateY(-3px); }
 .co-tabs .ftab.on { background: var(--ink); color: var(--bg); }
 .chapter, .group-head { scroll-margin-top: calc(var(--hdr, 70px) + 120px); }
@@ -195,7 +195,10 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .ch-no { grid-column: 1 / span 2; font-family: var(--display); font-weight: 500; font-size: clamp(56px, 8vw, 140px); line-height: .8; letter-spacing: -0.06em; color: transparent; -webkit-text-stroke: 1px var(--ink); }
 .ch-name { grid-column: 3 / span 7; font-family: var(--display); font-weight: 500; text-transform: uppercase; letter-spacing: -0.05em; line-height: .9; font-size: clamp(40px, 6.4vw, 112px); }
 .ch-meta { grid-column: 10 / span 3; display: flex; flex-direction: column; gap: 4px; text-align: right; font-size: 15px; }
-.ch-meta .mono { color: var(--muted); }
+.ch-logo { align-self: flex-end; height: clamp(28px, 3vw, 44px); width: auto; max-width: 180px; object-fit: contain; margin-bottom: 8px; }
+.ch-meta .ch-kr { font-size: 17px; font-weight: 600; letter-spacing: -0.02em; }
+.ch-meta .ch-role { font-size: 15px; color: var(--muted); letter-spacing: -0.01em; }
+.ch-meta .ch-pd { font-size: 13px; color: var(--muted); letter-spacing: 0; }
 .brand-head {
   display: flex; align-items: baseline; gap: 12px;
   font-size: clamp(22px, 2vw, 30px); font-weight: 600; letter-spacing: -0.03em;
@@ -439,6 +442,7 @@ a:hover .ed-title { text-decoration: underline; text-decoration-thickness: 1px; 
   .ed-lead .ed-media, .ed-lead.flip .ed-media { grid-column: 1 / span 12; }
   .ed-lead .ed-cap, .ed-lead.flip .ed-cap { grid-column: 1 / span 9; grid-row: auto; }
   .ch-name { grid-column: 3 / span 10; }
+  .ch-logo { align-self: flex-start; }
   .ch-meta { grid-column: 3 / span 10; text-align: left; flex-direction: row; flex-wrap: wrap; gap: 4px 16px; }
   .feature, .feature.flip { grid-template-columns: 1fr; gap: 20px; }
   .feature .f-media, .feature.flip .f-media, .feature .f-text, .feature.flip .f-text { grid-column: 1 / -1; grid-row: auto; }

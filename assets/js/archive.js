@@ -83,7 +83,7 @@
       <header class="ch-head reveal">
         <span class="ch-no">${pad(ci + 1)}</span>
         <span class="ch-name">${esc(g.name)}</span>
-        <span class="ch-meta"><span>${esc(g.kr)}</span><span class="mono">${esc(g.role)}</span><span class="mono">${esc(g.period)}</span></span>
+        <span class="ch-meta">${g.logo ? `<img class="ch-logo" src="${esc(g.logo)}" alt="${esc(g.kr)} 로고">` : ''}<span class="ch-kr">${esc(g.kr)}</span><span class="ch-role">${esc(g.role)}</span><span class="ch-pd mono">${esc(g.period)}</span></span>
       </header>
       ${body}
     </section>`;
@@ -112,7 +112,7 @@
   // 브랜드 이름이 흐르는 띠
   const ticker = document.querySelector('.ticker-track');
   if (ticker) {
-    const words = ['A’pieu', 'Pilkin', 'VDL', 'CNP', 'Yellow Balloon', 'Twennies', 'Hackers Law School', 'Lotte Duty Free'];
+    const words = ['A’pieu', 'Filkin', 'VDL', 'CNP', 'Yellow Balloon', 'Twennies', 'Hackers Law School', 'Lotte Duty Free'];
     const line = words.map((w) => `<span>${esc(w)}</span><i>✳︎</i>`).join('');
     ticker.innerHTML = line + line;
   }

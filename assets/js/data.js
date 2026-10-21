@@ -223,7 +223,7 @@ window.PROJECTS = [
   {
     slug: 'pilkin-popup',
     title: '필킨 무빙 팝업스토어',
-    titleEn: 'Pilkin — Moving Pop-up',
+    titleEn: 'Filkin — Moving Pop-up',
     client: '필킨',
     company: '뷰스컴퍼니',
     brand: '필킨',
@@ -285,7 +285,7 @@ window.PROJECTS = [
   {
     slug: 'pilkin-viral',
     title: '필킨 바이럴 & 파워페이지',
-    titleEn: 'Pilkin — Viral Marketing',
+    titleEn: 'Filkin — Viral Marketing',
     client: '필킨',
     company: '뷰스컴퍼니',
     brand: '필킨',
@@ -344,7 +344,7 @@ window.PROJECTS = [
   {
     slug: 'pilkin-ppl',
     title: '필킨 × 한선화 유튜브 PPL',
-    titleEn: 'Pilkin × Han Sunhwa',
+    titleEn: 'Filkin × Han Sunhwa',
     client: '필킨',
     company: '뷰스컴퍼니',
     brand: '필킨',
@@ -391,7 +391,7 @@ window.PROJECTS = [
   {
     slug: 'pilkin-detail-page',
     title: '필킨 포어 솔루션 3종 상세페이지',
-    titleEn: 'Pilkin — Product Detail Page',
+    titleEn: 'Filkin — Product Detail Page',
     client: '필킨',
     company: '뷰스컴퍼니',
     brand: '필킨',
@@ -623,7 +623,7 @@ window.PROJECTS = [
   {
     slug: 'pilkin-performance',
     title: '필킨 퍼포먼스 광고',
-    titleEn: 'Pilkin — Performance Ads',
+    titleEn: 'Filkin — Performance Ads',
     client: '필킨',
     company: '뷰스컴퍼니',
     brand: '필킨',
