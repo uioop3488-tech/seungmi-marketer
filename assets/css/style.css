@@ -988,7 +988,7 @@ body { background-color: var(--bg); background-image: repeating-linear-gradient(
 .copy-chip { display: inline-flex; margin-top: 14px; padding: 8px 16px; border: 1px solid var(--ink); border-radius: 999px; transition: background .2s, color .2s; }
 .copy-chip:hover { background: var(--tab-blue); }
 .copy-chip.copied { background: var(--ink); color: var(--bg); }
-.hello-badge { position: absolute; z-index: 3; top: 8%; left: -10%; width: clamp(92px, 9vw, 124px); animation: spin 22s linear infinite; }
+.hello-badge { position: absolute; z-index: 3; top: 8%; left: -42%; width: clamp(92px, 9vw, 124px); animation: spin 22s linear infinite; }
 .hello-badge text { fill: var(--ink); }
 @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -1007,7 +1007,7 @@ body { background-color: var(--bg); background-image: repeating-linear-gradient(
   .xp::before, .xp-fill { left: 8px; }
   .xp-row::before, .xp-next::before { left: -28px; }
   .contact-title { font-size: clamp(48px, 15vw, 72px); }
-  .hello-badge { top: 0; left: 0; }
+  .hello-badge { top: 0; left: -30%; }
 }
 @media (prefers-reduced-motion: reduce) {
   .hello-badge, .pixel-hand { animation: none !important; opacity: 1; }
