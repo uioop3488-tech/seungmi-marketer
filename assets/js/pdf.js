@@ -4,7 +4,8 @@
   내용은 모두 data.js 에서 가져옵니다.
 */
 (function () {
-  const P = window.PROJECTS;
+  // PDF에서는 짧은 개조식 문구(pdf-copy.js)를 우선 사용
+  const P = window.PROJECTS.map((p) => ({ ...p, ...((window.PDF_COPY || {})[p.slug] || {}) }));
   const PR = window.PROFILE;
   const GROUPS = window.COMPANY_GROUPS;
   const MINOR = new Set(window.MINOR || []);
@@ -37,9 +38,9 @@
 
   /* ---------- 2. 프로필 ---------- */
   const caps = [
-    ['Branding<br>Content', '네이밍·캐릭터 콘텐츠부터 인스타그램·블로그·유튜브 채널 운영까지, 브랜드를 말과 콘텐츠로 만듭니다.', '쿼카의 여행기 · 소통어워즈 2관왕 · 블로그 월 평균 3.5만'],
-    ['Viral<br>Offline', '브랜드 핏으로 크리에이터를 고르고, 팝업·박람회로 브랜드를 직접 경험하게 만듭니다.', '필킨 무빙 팝업 · 어퓨 쿠션 숏폼 57.6만 회 · VDL 숏폼 66만 회+'],
-    ['Performance<br>Data', '메타·네이버 광고를 운영하고, 대시보드와 LTV·CAC로 성과를 다시 확인합니다. ADsP 보유.', '주간 리드 +51% · LTV ×4 재정정 · ROAS 1,577%'],
+    ['Branding<br>Content', '네이밍 · 캐릭터 콘텐츠<br>인스타그램 · 블로그 · 유튜브 운영', '쿼카의 여행기 · 소통어워즈 2관왕 · 블로그 월 평균 3.5만'],
+    ['Viral<br>Offline', '브랜드 핏 크리에이터 섭외<br>팝업 · 박람회 브랜드 경험', '필킨 무빙 팝업 · 어퓨 쿠션 숏폼 57.6만 회 · VDL 숏폼 66만 회+'],
+    ['Performance<br>Data', '메타 · 네이버 광고 운영<br>대시보드 · LTV·CAC 성과 검증', '주간 리드 +51% · LTV ×4 재정정 · ROAS 1,577%'],
   ];
   add(`
     ${tabs([['About me'], ['Profile', 'blue']])}
@@ -58,9 +59,11 @@
       </div>
       <div class="pf-main">
         <span class="kicker">01 — About me</span>
-        <p class="pf-lead">실무로 성장한,<br>크리에이티브한 마케터 <mark>이승미</mark>입니다.</p>
-        <p class="pf-text">여행사, 교육 회사, 뷰티 광고대행사, 매칭 서비스 — 서로 다른 산업에서 브랜드와 고객이 만나는 접점을 만들어 왔습니다.
-          채널 운영에서 시작해 팝업스토어 같은 오프라인 경험, 인플루언서 바이럴, 퍼포먼스 광고와 성과 측정 시스템까지 직접 다뤘습니다.</p>
+        <p class="pf-lead">실무로 성장한,<br>크리에이티브한 마케터 <mark>이승미</mark></p>
+        <ul class="pf-points">
+          <li><b>4개 산업</b>여행 · 교육 · 뷰티 · 매칭 — 브랜드와 고객의 접점</li>
+          <li><b>전 과정</b>채널 운영 → 오프라인 팝업 → 인플루언서 바이럴 → 퍼포먼스 · 성과 측정</li>
+        </ul>
         <div class="tools">${PR.tools.map((t) => `<span>${esc(t)}</span>`).join('')}</div>
         <div class="caps">${caps.map(([h, p, proof], i) => `
           <div class="cap"><span class="kicker">${pad(i + 1)}</span><h3>${h}</h3><p>${p}</p><p class="proof">${proof}</p></div>`).join('')}
@@ -202,7 +205,7 @@
       const rest = vis.slice(first.length);
       const textCols = `
         <div class="pr-col fit">
-          ${blk('01', 'Background', `<div class="prose">${(p.background || []).map((s) => `<p>${esc(s)}</p>`).join('')}</div>`)}
+          ${blk('01', 'Background', `<ul class="dots">${(p.background || []).map((s) => `<li>${esc(s)}</li>`).join('')}</ul>`)}
           ${blk('02', 'Problem', olist(p.problem))}
           ${blk('03', 'My Role', olist(p.myRole))}
         </div>

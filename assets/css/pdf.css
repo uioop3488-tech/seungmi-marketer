@@ -47,6 +47,8 @@ ul { list-style: none; padding: 0; }
 .fit + .fit { margin-top: 0; }
 .prose p { font-size: .94em; line-height: 1.7; color: #33322f; }
 .prose p + p { margin-top: .5em; }
+.dots li { position: relative; padding: .18em 0 .18em 1em; font-size: .92em; line-height: 1.55; color: #2b2a27; }
+.dots li::before { content: ''; position: absolute; left: 0; top: .78em; width: 5px; height: 5px; border-radius: 50%; background: var(--ink); }
 .olist li { display: grid; grid-template-columns: 2.2em 1fr; font-size: .92em; line-height: 1.6; padding: .32em 0; border-bottom: 1px solid var(--line); color: #2b2a27; }
 .olist li .mono { font-size: .78em; color: var(--muted); padding-top: .2em; }
 .blk + .blk { margin-top: 1.5em; }
@@ -82,7 +84,9 @@ ul { list-style: none; padding: 0; }
 .pf-main { display: flex; flex-direction: column; }
 .pf-lead { margin-top: 18px; font-size: 46px; font-weight: 700; line-height: 1.22; letter-spacing: -0.045em; }
 .pf-lead mark { background: none; color: var(--pen); }
-.pf-text { margin-top: 20px; max-width: 760px; font-size: 17px; line-height: 1.8; color: #33322f; }
+.pf-points { margin-top: 22px; }
+.pf-points li { display: flex; gap: 14px; align-items: baseline; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 18px; letter-spacing: -0.01em; }
+.pf-points b { flex: none; width: 76px; font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: .06em; color: var(--muted); }
 .caps { margin-top: auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .cap { background: var(--sheet); border-radius: 18px; padding: 22px 22px 20px; }
 .cap h3 { font-family: var(--display); font-size: 26px; font-weight: 600; line-height: 1; letter-spacing: -0.04em; text-transform: uppercase; margin: 8px 0 12px; }
@@ -150,12 +154,12 @@ ul { list-style: none; padding: 0; }
 
 /* ── 프로젝트: 개요 ── */
 .ov { display: grid; grid-template-columns: 600px 1fr; gap: 48px; height: 100%; }
-.ov-left { display: flex; flex-direction: column; font-size: 16px; min-height: 0; }
+.ov-left { display: flex; flex-direction: column; font-size: 18px; min-height: 0; }
 .ov-cat { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 .ov-title { margin-top: 12px; font-size: 40px; font-weight: 700; line-height: 1.2; letter-spacing: -0.045em; }
 .ov-en { margin-top: 8px; font-family: var(--mono); font-size: 13px; color: var(--muted); }
 .ov-hl { display: inline-block; margin-top: 18px; padding: 6px 12px; background: var(--ink); color: #fff; border-radius: 8px; font-size: 15px; font-weight: 600; }
-.ov-sum { margin-top: 18px; font-size: 1.06em; line-height: 1.72; color: #262522; }
+.ov-sum { margin-top: 20px; font-size: 1.12em; font-weight: 600; line-height: 1.55; letter-spacing: -0.02em; color: #1d1c1a; }
 .wb { margin-top: 1em; position: relative; background: var(--sheet); border-radius: 12px; padding: .9em 1.05em .9em; font-size: .9em; line-height: 1.65; color: #33322f; }
 .wb b { display: inline-block; margin-right: .6em; padding: 2px 8px; border-radius: 6px; font-family: var(--mono); font-size: .76em; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; background: var(--blue); color: var(--ink); vertical-align: 1px; }
 .wb.so b { background: var(--pink); }
@@ -183,11 +187,11 @@ ul { list-style: none; padding: 0; }
 
 /* ── 프로젝트: 과정 ── */
 .pr { display: grid; grid-template-columns: var(--grid, 1fr 1.15fr 1fr); gap: 40px; height: 100%; }
-.pr-col { font-size: 16px; min-height: 0; }
+.pr-col { font-size: 18px; min-height: 0; }
 .steps .st { padding: .6em 0 .7em; border-bottom: 1px solid var(--line); }
 .steps .st .mono { font-size: .7em; color: var(--muted); letter-spacing: .06em; }
 .steps .st h4 { margin-top: .2em; font-size: 1em; font-weight: 700; letter-spacing: -0.02em; line-height: 1.4; }
-.steps .st p { margin-top: .25em; font-size: .86em; line-height: 1.62; color: #3b3a36; }
+.steps .st p { margin-top: .2em; font-size: .88em; line-height: 1.5; color: #4a4944; }
 .learn { margin-top: 1.4em; background: var(--sheet); border-radius: 12px; padding: .9em 1.1em; }
 .learn .lbl { border: 0; padding: 0; margin-bottom: .4em; }
 .learn li { font-size: .86em; line-height: 1.6; padding: .2em 0 .2em 1.1em; text-indent: -1.1em; color: #33322f; }
