@@ -68,6 +68,8 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 }
 .site-header nav a:hover::after { transform: scaleX(1); }
 .site-header .status { justify-self: end; display: flex; align-items: center; gap: 8px; }
+.pdf-btn { margin-left: 10px; padding: 6px 12px; border: 1px solid var(--ink); border-radius: 999px; transition: background .2s, color .2s; }
+.pdf-btn:hover { background: var(--ink); color: var(--bg); }
 .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); outline: 1px solid var(--ink); }
 
 /* ---------- Covers ---------- */
@@ -1021,6 +1023,7 @@ body { background-color: var(--bg); background-image: repeating-linear-gradient(
 .copy-chip { display: inline-flex; margin-top: 14px; padding: 8px 16px; border: 1px solid var(--ink); border-radius: 999px; transition: background .2s, color .2s; }
 .copy-chip:hover { background: var(--tab-blue); }
 .copy-chip.copied { background: var(--ink); color: var(--bg); }
+.note-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .hello-badge { position: absolute; z-index: 3; top: 8%; left: -42%; width: clamp(92px, 9vw, 124px); animation: spin 22s linear infinite; }
 .hello-badge text { fill: var(--ink); }
 @keyframes spin { to { transform: rotate(360deg); } }
