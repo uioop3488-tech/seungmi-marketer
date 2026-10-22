@@ -3,6 +3,13 @@
   - portfolio-pdf.html 에서만 쓰고, 웹사이트 문구(data.js)는 그대로 둡니다.
   - 여기 없는 항목은 data.js 값을 그대로 씁니다.
 */
+// 1쪽 케이스로 크게 보여줄 핵심 프로젝트 (나머지는 More Projects 카드)
+window.PDF_KEY = [
+  'twennies-creative', 'twennies-ltv-budget',
+  'apieu-viral', 'apieu-performance', 'pilkin-popup', 'pilkin-performance', 'vdl-olive-sale', 'cnp-shortform',
+  'yb-quokka', 'yb-europe-popup',
+];
+
 window.PDF_COPY = {
   'twennies-creative': {
     summary: '메타·네이버 광고 소재 기획 → 제작 → 회고 전담 + 소재 보고용 사이트 제작',

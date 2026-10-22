@@ -1,6 +1,6 @@
 /*
   포트폴리오 PDF 페이지 구성
-  표지 → 프로필 → 경력 → 목차 → 하이라이트 → (회사 챕터 → 프로젝트 개요 · 과정 · 갤러리) → 마지막
+  표지 → 프로필 → 경력 → 목차 → 하이라이트 → 핵심 케이스(1쪽씩) → More Projects(카드) → 마지막 · 20쪽 이내
   내용은 모두 data.js 에서 가져옵니다.
 */
 (function () {
@@ -98,7 +98,7 @@
     ${tabs([['Contents'], [`${pad(P.length)} Projects`, 'green']])}
     <div class="sheet">
       <h2 class="h-sec">Contents</h2>
-      <div class="toc-intro"><span><b>01</b>About me · Career</span><span><b>02</b>Highlights</span><span><b>03</b>Projects — 회사별 챕터</span></div>
+      <div class="toc-intro"><span><b>01</b>About me · Career</span><span><b>02</b>Highlights</span><span><b>03</b>Key Cases</span><span><b>04</b>More Projects</span></div>
       <div class="toc">${groups.map(({ g, n, items }) => `
         <div class="toc-ch"><div class="no">${n}</div><h3>${esc(g.name)}</h3><div class="kr">${esc(g.kr)} · ${esc(g.period)}</div>
           <ul>${items.map((p) => `<li><span>${esc(p.title)}</span><span class="mono" data-pageof="${p.slug}"></span></li>`).join('')}</ul>
@@ -122,7 +122,7 @@
     </div>`);
 
   /* ---------- 프로젝트 ---------- */
-  function coverHTML(p, inTile) {
+  function coverHTML(p) {
     const c = p.cover;
     if (c.type === 'text') return `<div class="vis text" style="background:${c.bg};color:${c.fg};height:100%"><span>${esc(c.text)}</span></div>`;
     if (c.type === 'trio' || c.type === 'duo') {
@@ -132,106 +132,72 @@
     return `<div class="vis" style="height:100%"><img class="${c.fit === 'contain' ? 'contain' : ''}" src="${img(c.src)}" alt=""></div>`;
   }
 
-  // 쇼케이스(휴대폰 소재) + 갤러리를 하나의 이미지 목록으로
-  const coverSrcs = (c) => (c.videos || c.imgs || (c.src ? [c.src] : [])).map(img);
-  const visuals = (p) => {
-    const used = new Set(coverSrcs(p.cover));
-    return [
-      ...(p.showcase ? p.showcase.items.map((m) => ({ k: 'sc', src: img(m.video || m.img), t: m.title, s: m.seg })) : []),
-      ...(p.gallery || []).map((g) => g.yt ? { k: 'yt', id: g.yt, cap: g.cap } : { k: 'img', src: img(g.img || g.video), cap: g.cap }),
-    ].filter((v) => !v.src || !used.has(v.src));
-  };
-  const tile = (v) => {
-    if (v.k === 'yt') return `<figure class="tile yt"><span class="play"></span><p>${esc(v.cap || 'YouTube')}</p><span class="url">youtu.be/${esc(v.id)}</span></figure>`;
-    if (v.k === 'sc') return `<figure class="tile sc"><div class="im"><img src="${v.src}" alt="" data-phone></div><div class="sc-t">${esc(v.t)}</div><div class="sc-s">${esc(v.s)}</div></figure>`;
-    return `<figure class="tile"><div class="im"><img src="${v.src}" alt=""></div>${v.cap ? `<figcaption>${esc(v.cap)}</figcaption>` : ''}</figure>`;
-  };
-  const gridStyle = (n, maxCols) => { const cols = Math.min(maxCols, n); return `grid-template-columns:repeat(${cols},minmax(0,1fr));grid-template-rows:repeat(${Math.ceil(n / cols)},minmax(0,1fr))`; };
   const olist = (arr) => `<ul class="olist">${(arr || []).map((s, i) => `<li><span class="mono">${pad(i + 1)}</span><span>${esc(s)}</span></li>`).join('')}</ul>`;
   const blk = (no, label, inner) => `<div class="blk"><div class="lbl"><span class="mono">${no}</span>${label}</div>${inner}</div>`;
 
+  // 핵심 프로젝트는 1쪽 케이스, 나머지는 한 쪽에 4~5개씩 카드로 (전체 20쪽 이내)
+  const KEY = new Set(window.PDF_KEY || []);
+  const toneOf = (p) => TONES[groups.findIndex((x) => x.g.id === p.company) % 3];
   const projPage = {};
-  groups.forEach(({ g, n, items }, gi) => {
-    // 챕터 표지
-    const brands = window.BRAND_ORDER.filter((b) => items.some((p) => p.brand === b) && b !== g.id);
-    add(`
-      ${tabs([[`Chapter ${n}`], [esc(g.kr), TONES[gi % 3]], [`${pad(items.length)} projects`, TONES[(gi + 1) % 3]]])}
-      <div class="sheet">
-        <div class="ch-top"><div class="ch-no">${n}</div>
-          <div><div class="ch-name">${esc(g.name)}</div>
-            <div class="ch-meta"><b>${esc(g.kr)}</b><span>${esc(g.role)}</span><span class="mono">${esc(g.period)}</span></div>
-            ${brands.length ? `<div class="ch-brands">${brands.map((b) => `<span>${esc(b)}</span>`).join('')}</div>` : ''}
-          </div>
+  const keys = P.filter((p) => KEY.has(p.slug));
+  const others = P.filter((p) => !KEY.has(p.slug));
+
+  keys.forEach((p, k) => {
+    const res = (p.results || []).slice(0, 4);
+    const steps = (p.approach || []).slice(0, 5);
+    projPage[p.slug] = add(`
+      ${tabs([[`Case ${pad(k + 1)}`, 'mono'], [esc(p.brand || p.company), toneOf(p)], [esc(p.year), 'pink']])}
+      <div class="sheet"><div class="case">
+        <div class="cs-a fit">
+          <span class="ov-cat">${esc(p.company)} · ${p.cats.map((c) => esc(CAT[c])).join(' · ')}</span>
+          <h2 class="ov-title">${esc(p.title)}</h2>
+          <div><span class="ov-hl">${esc(p.headline)}</span></div>
+          <p class="ov-sum">${esc(p.summary)}</p>
+          ${p.why ? `<p class="wb"><b>Why</b>${esc(p.why)}</p>` : ''}
+          ${p.impact ? `<p class="wb so"><b>So what</b>${esc(p.impact)}</p>` : ''}
+          <dl class="meta one">
+            <div><dt>Period</dt><dd>${esc(p.period)}</dd></div>
+            <div><dt>Role</dt><dd>${esc(p.role)}</dd></div>
+            <div><dt>Channel</dt><dd>${p.channels.map(esc).join(', ')}</dd></div>
+          </dl>
         </div>
-        <ul class="ch-list">${items.map((p) => `<li><span class="mono">No. ${pad(P.indexOf(p) + 1)}</span><span>${esc(p.title)}</span><span class="hl2">${esc(p.headline)}</span></li>`).join('')}</ul>
-      </div>`, 'chapter-pg');
-
-    items.forEach((p) => {
-      const no = pad(P.indexOf(p) + 1);
-      const t = (label, tone) => tabs([[`No. ${no}`, 'mono'], [esc(p.brand || p.company), tone], [esc(p.year), 'pink'], [label, 'mono']]);
-      const tone = TONES[gi % 3];
-      const res = (p.results || []).slice(0, 6);
-
-      // 개요
-      projPage[p.slug] = add(`
-        ${t('Overview', tone)}
-        <div class="sheet"><div class="ov">
-          <div class="ov-left fit">
-            <span class="ov-cat">${p.cats.map((c) => esc(CAT[c])).join(' · ')}</span>
-            <h2 class="ov-title">${esc(p.title)}</h2>
-            <div class="ov-en">${esc(p.titleEn)}</div>
-            <div><span class="ov-hl">${esc(p.headline)}</span></div>
-            <p class="ov-sum">${esc(p.summary)}</p>
-            ${p.why ? `<p class="wb"><b>Why</b>${esc(p.why)}</p>` : ''}
-            ${p.impact ? `<p class="wb so"><b>So what</b>${esc(p.impact)}</p>` : ''}
-            <dl class="meta">
-              <div><dt>Client</dt><dd>${esc(p.client)}</dd></div>
-              <div><dt>Period</dt><dd>${esc(p.period)}</dd></div>
-              <div><dt>Role</dt><dd>${esc(p.role)}</dd></div>
-              <div><dt>Channel</dt><dd>${p.channels.map(esc).join(', ')}</dd></div>
-            </dl>
-          </div>
-          <div class="ov-right">
-            <div style="flex:1;min-height:0">${coverHTML(p)}</div>
-            ${res.length ? `<div class="results" style="--cols:${res.length <= 4 ? res.length : 3}">${res.map((r) => `<div class="res"><div class="n">${esc(r.n)}</div><div class="l">${esc(r.l)}</div></div>`).join('')}</div>` : ''}
-          </div>
-        </div></div>`);
-
-      // 과정 (+ 이미지 일부)
-      const vis = visuals(p);
-      const scCount = vis.filter((v) => v.k === 'sc').length;
-      // 과정 쪽에 최대 4개(남는 게 2개 이하면 6개까지), 나머지는 갤러리 쪽으로
-      const first = vis.slice(0, scCount ? scCount : vis.length <= 6 ? 6 : 4);
-      const rest = vis.slice(first.length);
-      const textCols = `
-        <div class="pr-col fit">
-          ${blk('01', 'Background', `<ul class="dots">${(p.background || []).map((s) => `<li>${esc(s)}</li>`).join('')}</ul>`)}
-          ${blk('02', 'Problem', olist(p.problem))}
-          ${blk('03', 'My Role', olist(p.myRole))}
+        <div class="cs-b fit">
+          ${blk('01', 'My Role', olist(p.myRole))}
+          ${blk('02', 'Approach', `<div class="steps">${steps.map((s, i) => `<div class="st"><span class="mono">${pad(i + 1)}</span><h4>${esc(s.h)}</h4><p>${esc(s.p)}</p></div>`).join('')}</div>`)}
         </div>
-        <div class="pr-col fit">
-          ${blk('04', 'Approach', `<div class="steps">${(p.approach || []).map((s, i) => `<div class="st"><span class="mono">STEP ${pad(i + 1)}</span><h4>${esc(s.h)}</h4><p>${esc(s.p)}</p></div>`).join('')}</div>`)}
-          ${(p.learnings || []).length ? `<div class="learn"><div class="lbl"><span class="mono">05</span>Learnings</div><ul>${p.learnings.map((s) => `<li>${esc(s)}</li>`).join('')}</ul></div>` : ''}
-        </div>`;
-      add(`
-        ${t('Process', tone)}
-        <div class="sheet"><div class="pr" style="--grid:${first.length ? '0.95fr 1.05fr 1.3fr' : '1fr 1.3fr'}">
-          ${textCols}
-          ${first.length ? `<div class="pr-vis" style="${gridStyle(first.length, scCount ? 3 : first.length > 4 ? 3 : 2)}">${first.map(tile).join('')}</div>` : ''}
-        </div></div>`);
-
-      // 나머지 이미지: 한 쪽에 최대 8개
-      for (let k = 0; k < rest.length; k += 8) {
-        const chunk = rest.slice(k, k + 8);
-        add(`
-          ${t('Gallery', tone)}
-          <div class="sheet">
-            <div class="gal-head"><h3>${esc(p.title)}</h3><span class="kicker">Gallery ${rest.length > 8 ? `${k / 8 + 1} / ${Math.ceil(rest.length / 8)}` : ''}</span></div>
-            <div class="gal" style="${gridStyle(chunk.length, 4)}">${chunk.map(tile).join('')}</div>
-          </div>`);
-      }
-    });
+        <div class="cs-c">
+          <div style="flex:1;min-height:0">${coverHTML(p)}</div>
+          ${res.length ? `<div class="results" style="--cols:2">${res.map((r) => `<div class="res"><div class="n">${esc(r.n)}</div><div class="l">${esc(r.l)}</div></div>`).join('')}</div>` : ''}
+        </div>
+      </div></div>`);
   });
+
+  // 그 밖의 프로젝트: 카드 모음
+  const perPage = Math.ceil(others.length / Math.ceil(others.length / 5));
+  for (let i = 0; i < others.length; i += perPage) {
+    const chunk = others.slice(i, i + perPage);
+    const pageNo = pages.length + 1;
+    chunk.forEach((p) => (projPage[p.slug] = pageNo));
+    add(`
+      ${tabs([['More Projects'], [`${pad(i / perPage + 1)} / ${pad(Math.ceil(others.length / perPage))}`, 'green']])}
+      <div class="sheet">
+        <h2 class="h-sec">More <em>projects</em></h2>
+        <div class="more" style="grid-template-columns:repeat(${chunk.length},minmax(0,1fr))">${chunk.map((p) => {
+          const res = (p.results || []).slice(0, 2);
+          return `
+          <article class="mc">
+            <div class="mc-media">${coverHTML(p)}</div>
+            <div class="mc-body fit">
+              <span class="mc-co"><b class="${toneOf(p)}">${esc(p.brand || p.company)}</b>${esc(p.year)}</span>
+              <h3>${esc(p.title)}</h3>
+              <p class="mc-sum">${esc(p.summary)}</p>
+              <ul class="dots">${(p.myRole || []).slice(0, 3).map((r) => `<li>${esc(r)}</li>`).join('')}</ul>
+              <div class="mc-res">${res.map((r) => `<div><b>${esc(r.n)}</b><span>${esc(r.l)}</span></div>`).join('')}</div>
+            </div>
+          </article>`; }).join('')}
+        </div>
+      </div>`);
+  }
 
   /* ---------- 마지막 ---------- */
   add(`
@@ -253,32 +219,12 @@
   Promise.all([document.fonts.ready, ...imgs.map((i) => (i.complete ? 0 : new Promise((r) => { i.onload = i.onerror = r; })))]).then(() => {
     imgs.forEach((im) => {
       const tall = im.naturalHeight / im.naturalWidth > 1.55;
-      if (!tall || !(im.hasAttribute('data-phone') || im.closest('.tile'))) return;
+      if (!tall || !im.hasAttribute('data-phone')) return;
       const ph = document.createElement('div');
       ph.className = 'phone';
       ph.innerHTML = '<div class="scr"></div>';
       im.replaceWith(ph);
       ph.firstChild.appendChild(im);
-    });
-    // 이미지 칸 배치: 열 수를 바꿔 보며 이미지가 가장 크게 보이는 배치를 고름
-    document.querySelectorAll('.pr-vis, .gal').forEach((box) => {
-      const tiles = [...box.children];
-      const ratios = tiles.map((t) => {
-        if (t.classList.contains('yt')) return 1.3;
-        const im = t.querySelector('img');
-        if (!im || !im.naturalWidth) return 1;
-        return t.querySelector('.phone') ? 9 / 19 : im.naturalWidth / im.naturalHeight;
-      });
-      const W = box.clientWidth, H = box.clientHeight, gap = 14, n = tiles.length;
-      let best = null;
-      for (let cols = 1; cols <= Math.min(4, n); cols++) {
-        const rows = Math.ceil(n / cols);
-        const cw = (W - gap * (cols - 1)) / cols - 24, ch = (H - gap * (rows - 1)) / rows - 24 - 28;
-        if (cw < 60 || ch < 60) continue;
-        const area = ratios.reduce((a, r) => { const fw = Math.min(cw, ch * r); return a + fw * (fw / r); }, 0);
-        if (!best || area > best.area) best = { cols, rows, area };
-      }
-      if (best) box.style.cssText += `;grid-template-columns:repeat(${best.cols},minmax(0,1fr));grid-template-rows:repeat(${best.rows},minmax(0,1fr))`;
     });
     // 같은 줄 휴대폰 높이: 세트 커버는 가로 폭에 맞춰 줄임
     document.querySelectorAll('.vis.set').forEach((set) => {
@@ -287,10 +233,6 @@
       const ph = Math.min(h, (w / phones.length) * 19 / 9);
       phones.forEach((p) => (p.style.height = ph + 'px'));
     });
-    document.querySelectorAll('.tile .phone').forEach((p) => {
-      const box = p.parentElement;
-      p.style.height = Math.min(box.clientHeight, box.clientWidth * 19 / 9) + 'px';
-    });
     // 넘치는 글은 글자 크기를 0.5px씩 줄임 (최소 11px)
     const fitEl = (el) => {
       el.style.fontSize = '';
@@ -298,16 +240,6 @@
       while (el.scrollHeight > el.clientHeight + 1 && fs > 11) { fs -= 0.5; el.style.fontSize = fs + 'px'; }
       return fs;
     };
-    // 과정 쪽: Learnings를 가운데/왼쪽 중 글자가 더 크게 남는 쪽에 둠
-    document.querySelectorAll('.pr').forEach((pr) => {
-      const [left, mid] = pr.querySelectorAll('.pr-col');
-      const learn = mid && mid.querySelector('.learn');
-      if (!learn) return;
-      const inMid = Math.min(fitEl(left), fitEl(mid));
-      left.appendChild(learn);
-      const inLeft = Math.min(fitEl(left), fitEl(mid));
-      if (inMid >= inLeft) mid.appendChild(learn);
-    });
     document.querySelectorAll('.fit').forEach(fitEl);
     document.querySelectorAll('.res .n').forEach((n) => {
       let fs = 32;
