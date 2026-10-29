@@ -116,7 +116,7 @@
         <div class="hl-item">
           <div class="hl-media">${coverHTML(p, true)}</div>
           <div class="hl-body"><div class="hl-n"><span>${esc(f.n)}</span></div><div class="hl-l">${esc(f.l)}</div>
-            <div class="hl-t">${esc(p.title)}</div><p class="hl-p">${esc(p.impact || p.summary)}</p></div>
+            <div class="hl-t">${esc(p.title)}</div></div>
         </div>`; }).join('')}
       </div>
     </div>`);
@@ -132,47 +132,39 @@
     return `<div class="vis" style="height:100%"><img class="${c.fit === 'contain' ? 'contain' : ''}" src="${img(c.src)}" alt=""></div>`;
   }
 
-  const olist = (arr) => `<ul class="olist">${(arr || []).map((s, i) => `<li><span class="mono">${pad(i + 1)}</span><span>${esc(s)}</span></li>`).join('')}</ul>`;
-  const blk = (no, label, inner) => `<div class="blk"><div class="lbl"><span class="mono">${no}</span>${label}</div>${inner}</div>`;
 
-  // 핵심 프로젝트는 1쪽 케이스, 나머지는 한 쪽에 4~5개씩 카드로 (전체 20쪽 이내)
+  // 핵심 프로젝트는 1쪽 케이스(헤드라인 · KPI · Issue/Action · 대표 이미지), 나머지는 카드 (전체 20쪽 이내)
   const KEY = new Set(window.PDF_KEY || []);
   const toneOf = (p) => TONES[groups.findIndex((x) => x.g.id === p.company) % 3];
   const projPage = {};
   const keys = P.filter((p) => KEY.has(p.slug));
   const others = P.filter((p) => !KEY.has(p.slug));
 
+  const IMP = window.PDF_IMPACT || {};
+  // *강조* → 강조색, 줄바꿈 유지
+  const hookHTML = (t) => esc(t).replace(/\*(.+?)\*/g, '<em>$1</em>').replace(/\n/g, '<br>');
+
   keys.forEach((p, k) => {
-    const res = (p.results || []).slice(0, 4);
-    const steps = (p.approach || []).slice(0, 5);
+    const im = IMP[p.slug] || {};
+    const kpi = (im.kpi || (p.results || []).map((r) => [r.n, r.l])).slice(0, 3);
     projPage[p.slug] = add(`
       ${tabs([[`Case ${pad(k + 1)}`, 'mono'], [esc(p.brand || p.company), toneOf(p)], [esc(p.year), 'pink']])}
-      <div class="sheet"><div class="case">
-        <div class="cs-a fit">
-          <span class="ov-cat">${esc(p.company)} · ${p.cats.map((c) => esc(CAT[c])).join(' · ')}</span>
-          <h2 class="ov-title">${esc(p.title)}</h2>
-          <div><span class="ov-hl">${esc(p.headline)}</span></div>
-          <p class="ov-sum">${esc(p.summary)}</p>
-          ${p.why ? `<p class="wb"><b>Why</b>${esc(p.why)}</p>` : ''}
-          ${p.impact ? `<p class="wb so"><b>So what</b>${esc(p.impact)}</p>` : ''}
-          <dl class="meta one">
-            <div><dt>Period</dt><dd>${esc(p.period)}</dd></div>
-            <div><dt>Role</dt><dd>${esc(p.role)}</dd></div>
-            <div><dt>Channel</dt><dd>${p.channels.map(esc).join(', ')}</dd></div>
-          </dl>
+      <div class="sheet"><div class="cx">
+        <div class="cx-l">
+          <div class="cx-top"><span class="pill">${esc(p.company)}</span><span class="cx-name">${esc(p.title)}</span></div>
+          <h2 class="cx-hook">${hookHTML(im.hook || p.headline)}</h2>
+          <div class="kpis">${kpi.map(([n, l]) => `<div class="kpi"><b>${esc(n)}</b><span>${esc(l)}</span></div>`).join('')}</div>
+          <div class="cx-cards">
+            <div class="ic"><span class="ic-t">Issue</span><p>${esc(im.issue || p.why || '')}</p></div>
+            <div class="ic dark"><span class="ic-t">Action</span><ol>${(im.action || []).map((x) => `<li>${esc(x)}</li>`).join('')}</ol></div>
+          </div>
+          <div class="cx-meta"><span>Role</span>${esc(p.role)}<span>Period</span>${esc(p.period)}</div>
         </div>
-        <div class="cs-b fit">
-          ${blk('01', 'My Role', olist(p.myRole))}
-          ${blk('02', 'Approach', `<div class="steps">${steps.map((s, i) => `<div class="st"><span class="mono">${pad(i + 1)}</span><h4>${esc(s.h)}</h4><p>${esc(s.p)}</p></div>`).join('')}</div>`)}
-        </div>
-        <div class="cs-c">
-          <div style="flex:1;min-height:0">${coverHTML(p)}</div>
-          ${res.length ? `<div class="results" style="--cols:2">${res.map((r) => `<div class="res"><div class="n">${esc(r.n)}</div><div class="l">${esc(r.l)}</div></div>`).join('')}</div>` : ''}
-        </div>
+        <div class="cx-r">${coverHTML(p)}</div>
       </div></div>`);
   });
 
-  // 그 밖의 프로젝트: 카드 모음
+  // 그 밖의 프로젝트: 카드 모음 (이미지 + 큰 숫자 + 한 줄)
   const perPage = Math.ceil(others.length / Math.ceil(others.length / 5));
   for (let i = 0; i < others.length; i += perPage) {
     const chunk = others.slice(i, i + perPage);
@@ -183,16 +175,17 @@
       <div class="sheet">
         <h2 class="h-sec">More <em>projects</em></h2>
         <div class="more" style="grid-template-columns:repeat(${chunk.length},minmax(0,1fr))">${chunk.map((p) => {
-          const res = (p.results || []).slice(0, 2);
+          const im = IMP[p.slug] || {};
+          const [n, l] = (im.kpi && im.kpi[0]) || [(p.results && p.results[0] || {}).n || '', (p.results && p.results[0] || {}).l || ''];
           return `
           <article class="mc">
             <div class="mc-media">${coverHTML(p)}</div>
-            <div class="mc-body fit">
+            <div class="mc-body">
               <span class="mc-co"><b class="${toneOf(p)}">${esc(p.brand || p.company)}</b>${esc(p.year)}</span>
+              <div class="mc-n">${esc(n)}</div>
+              <div class="mc-l">${esc(l)}</div>
               <h3>${esc(p.title)}</h3>
-              <p class="mc-sum">${esc(p.summary)}</p>
-              <ul class="dots">${(p.myRole || []).slice(0, 3).map((r) => `<li>${esc(r)}</li>`).join('')}</ul>
-              <div class="mc-res">${res.map((r) => `<div><b>${esc(r.n)}</b><span>${esc(r.l)}</span></div>`).join('')}</div>
+              <p class="mc-hook">${esc(im.hook || p.headline)}</p>
             </div>
           </article>`; }).join('')}
         </div>
@@ -233,17 +226,15 @@
       const ph = Math.min(h, (w / phones.length) * 19 / 9);
       phones.forEach((p) => (p.style.height = ph + 'px'));
     });
-    // 넘치는 글은 글자 크기를 0.5px씩 줄임 (최소 11px)
-    const fitEl = (el) => {
-      el.style.fontSize = '';
-      let fs = parseFloat(getComputedStyle(el).fontSize);
-      while (el.scrollHeight > el.clientHeight + 1 && fs > 11) { fs -= 0.5; el.style.fontSize = fs + 'px'; }
-      return fs;
-    };
-    document.querySelectorAll('.fit').forEach(fitEl);
-    document.querySelectorAll('.res .n').forEach((n) => {
-      let fs = 32;
-      while (n.scrollWidth > n.clientWidth + 1 && fs > 18) { fs -= 1; n.style.fontSize = fs + 'px'; }
+    // 왼쪽 칸이 넘치면 헤드라인을 줄이고, 칸보다 긴 숫자는 글자를 줄임
+    document.querySelectorAll('.cx-l').forEach((col) => {
+      const hook = col.querySelector('.cx-hook');
+      let fs = 62;
+      while (col.scrollHeight > col.clientHeight + 1 && fs > 40) { fs -= 2; hook.style.fontSize = fs + 'px'; }
+    });
+    document.querySelectorAll('.kpi b, .mc-n').forEach((n) => {
+      let fs = parseFloat(getComputedStyle(n).fontSize);
+      while (n.scrollWidth > n.clientWidth + 1 && fs > 22) { fs -= 1; n.style.fontSize = fs + 'px'; }
     });
     document.body.dataset.ready = '1';
   });
