@@ -226,6 +226,12 @@
       const ph = Math.min(h, (w / phones.length) * 19 / 9);
       phones.forEach((p) => (p.style.height = ph + 'px'));
     });
+    // 경력 쪽: 오른쪽 Education 제목을 첫 회사(트웨니스) 이름과 같은 높이에서 시작
+    document.querySelectorAll('.career').forEach((c) => {
+      const co = c.querySelector('.xp-row .xp-co'), facts = c.querySelector('.facts'), h4 = facts.querySelector('h4');
+      const target = co.getBoundingClientRect().top + (co.offsetHeight - h4.offsetHeight) / 2;
+      facts.style.paddingTop = target - h4.getBoundingClientRect().top + 'px';
+    });
     // 왼쪽 칸이 넘치면 헤드라인을 줄이고, 칸보다 긴 숫자는 글자를 줄임
     document.querySelectorAll('.cx-l').forEach((col) => {
       const hook = col.querySelector('.cx-hook');
