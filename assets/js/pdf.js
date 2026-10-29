@@ -52,7 +52,7 @@
         <div class="pf-role">Marketer · Branding / Content</div>
         <ul class="pf-list">
           <li><span>E-mail</span><span>${esc(PR.email)}</span></li>
-          <li><span>Career</span><span>4년차 · 4개 회사</span></li>
+          <li><span>Career</span><span>5년차</span></li>
           <li><span>Industry</span><span>여행 · 교육 · 뷰티 · 매칭</span></li>
           <li><span>Certificate</span><span>${esc(PR.certs[0].t)}</span></li>
         </ul>
