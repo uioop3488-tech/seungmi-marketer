@@ -130,21 +130,24 @@ ul { list-style: none; padding: 0; }
 .cx-top { display: flex; align-items: center; gap: 12px; }
 .pill { padding: 6px 14px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 13px; font-weight: 600; }
 .cx-name { font-size: 16px; font-weight: 600; color: var(--muted); letter-spacing: -0.01em; }
-.cx-hook { margin-top: 26px; font-size: 62px; font-weight: 800; line-height: 1.2; letter-spacing: -0.055em; }
+.cx-hook { margin-top: 22px; font-size: 52px; font-weight: 800; line-height: 1.2; letter-spacing: -0.055em; }
 .cx-hook em { font-style: normal; color: var(--pen); }
-.kpis { margin-top: 44px; padding: 26px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--line); display: flex; }
+.cx-lead { margin-top: 16px; font-size: 17px; font-weight: 500; line-height: 1.6; letter-spacing: -0.02em; color: #3b3a36; }
+.kpis { margin-top: 24px; padding: 20px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--line); display: flex; }
 .kpi { flex: 1; padding: 0 22px; border-left: 1px solid var(--line); }
 .kpi:first-child { padding-left: 0; border-left: 0; }
-.kpi b { display: block; font-family: var(--display); font-size: 56px; font-weight: 600; line-height: 1; letter-spacing: -0.05em; white-space: nowrap; }
-.kpi span { display: block; margin-top: 12px; font-size: 15px; color: var(--muted); }
-.cx-cards { margin-top: 32px; display: grid; grid-template-columns: 1fr 1.25fr; gap: 14px; }
-.ic { border-radius: 18px; padding: 20px 22px; background: var(--sheet); }
+.kpi b { display: block; font-family: var(--display); font-size: 46px; font-weight: 600; line-height: 1; letter-spacing: -0.05em; white-space: nowrap; }
+.kpi span { display: block; margin-top: 10px; font-size: 14px; color: var(--muted); }
+.cx-cards { margin-top: 22px; display: grid; grid-template-columns: 1fr 1.6fr; gap: 14px; font-size: 15px; }
+.ic { border-radius: 18px; padding: 18px 20px; background: var(--sheet); }
 .ic.dark { background: #1f2333; color: #fff; }
 .ic-t { display: inline-block; margin-bottom: 12px; padding: 3px 10px; border-radius: 999px; background: var(--blue); color: var(--ink); font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
 .ic.dark .ic-t { background: var(--pink); }
-.ic p { font-size: 17px; font-weight: 600; line-height: 1.5; letter-spacing: -0.02em; }
+.ic p { font-size: 1em; font-weight: 500; line-height: 1.6; letter-spacing: -0.02em; color: #2b2a27; }
 .ic ol { margin: 0; padding: 0; list-style: none; counter-reset: a; }
-.ic li { counter-increment: a; display: flex; gap: 10px; padding: 5px 0; font-size: 16px; font-weight: 600; letter-spacing: -0.02em; }
+.ic li { counter-increment: a; display: flex; gap: 10px; padding: .32em 0; font-size: 1em; font-weight: 600; letter-spacing: -0.02em; }
+.ic li b { display: block; font-weight: 700; }
+.ic li small { display: block; margin-top: 2px; font-size: .84em; font-weight: 400; line-height: 1.45; color: #c4c8d6; }
 .ic li::before { content: counter(a, decimal-leading-zero); font-family: var(--mono); font-size: 11px; font-weight: 400; color: #9aa0b4; padding-top: 4px; }
 .cx-meta { margin-top: auto; display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; font-size: 13px; color: #3b3a36; }
 .cx-meta span { margin-left: 8px; font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
@@ -162,7 +165,7 @@ ul { list-style: none; padding: 0; }
 /* ── More Projects (카드) ── */
 .more { display: grid; gap: 18px; height: calc(100% - 68px); margin-top: 24px; }
 .mc { display: flex; flex-direction: column; min-height: 0; background: var(--sheet); border-radius: 18px; overflow: hidden; }
-.mc-media { height: 330px; flex: none; }
+.mc-media { height: 290px; flex: none; }
 .mc-media .vis { border-radius: 0; }
 .mc-media .vis.set { padding: 14px; gap: 10px; }
 .mc-media .vis.text span { font-size: 56px; }
@@ -173,7 +176,7 @@ ul { list-style: none; padding: 0; }
 .mc-n { margin-top: 18px; font-family: var(--display); font-size: 44px; font-weight: 600; line-height: 1; letter-spacing: -0.05em; white-space: nowrap; }
 .mc-l { margin-top: 6px; font-size: 13px; color: var(--muted); }
 .mc h3 { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--line); font-size: 17px; font-weight: 700; line-height: 1.35; letter-spacing: -0.03em; }
-.mc-hook { margin-top: 4px; font-size: 13.5px; color: #4a4944; }
+.mc-hook { margin-top: 6px; font-size: 13.5px; line-height: 1.55; color: #4a4944; }
 
 /* 휴대폰 목업 */
 .phone { flex: none; height: 100%; aspect-ratio: 9 / 19; padding: 6px; background: #111; border-radius: 26px; box-shadow: 0 12px 26px rgba(0, 0, 0, .18); }

@@ -145,7 +145,7 @@
   const hookHTML = (t) => esc(t).replace(/\*(.+?)\*/g, '<em>$1</em>').replace(/\n/g, '<br>');
 
   keys.forEach((p, k) => {
-    const im = IMP[p.slug] || {};
+    const im = { ...(IMP[p.slug] || {}), ...((window.PDF_STORY || {})[p.slug] || {}) };
     const kpi = (im.kpi || (p.results || []).map((r) => [r.n, r.l])).slice(0, 3);
     projPage[p.slug] = add(`
       ${tabs([[`Case ${pad(k + 1)}`, 'mono'], [esc(p.brand || p.company), toneOf(p)], [esc(p.year), 'pink']])}
@@ -153,10 +153,11 @@
         <div class="cx-l">
           <div class="cx-top"><span class="pill">${esc(p.company)}</span><span class="cx-name">${esc(p.title)}</span></div>
           <h2 class="cx-hook">${hookHTML(im.hook || p.headline)}</h2>
+          ${im.lead ? `<p class="cx-lead">${esc(im.lead)}</p>` : ''}
           <div class="kpis">${kpi.map(([n, l]) => `<div class="kpi"><b>${esc(n)}</b><span>${esc(l)}</span></div>`).join('')}</div>
           <div class="cx-cards">
             <div class="ic"><span class="ic-t">Issue</span><p>${esc(im.issue || p.why || '')}</p></div>
-            <div class="ic dark"><span class="ic-t">Action</span><ol>${(im.action || []).map((x) => `<li>${esc(x)}</li>`).join('')}</ol></div>
+            <div class="ic dark"><span class="ic-t">Action</span><ol>${(im.action || []).map((x) => Array.isArray(x) ? `<li><span><b>${esc(x[0])}</b><small>${esc(x[1])}</small></span></li>` : `<li>${esc(x)}</li>`).join('')}</ol></div>
           </div>
           <div class="cx-meta"><span>Role</span>${esc(p.role)}<span>Period</span>${esc(p.period)}</div>
         </div>
@@ -185,7 +186,7 @@
               <div class="mc-n">${esc(n)}</div>
               <div class="mc-l">${esc(l)}</div>
               <h3>${esc(p.title)}</h3>
-              <p class="mc-hook">${esc(im.hook || p.headline)}</p>
+              <p class="mc-hook">${esc(p.summary)}</p>
             </div>
           </article>`; }).join('')}
         </div>
@@ -235,8 +236,11 @@
     // 왼쪽 칸이 넘치면 헤드라인을 줄이고, 칸보다 긴 숫자는 글자를 줄임
     document.querySelectorAll('.cx-l').forEach((col) => {
       const hook = col.querySelector('.cx-hook');
-      let fs = 62;
-      while (col.scrollHeight > col.clientHeight + 1 && fs > 40) { fs -= 2; hook.style.fontSize = fs + 'px'; }
+      let fs = 52;
+      while (col.scrollHeight > col.clientHeight + 1 && fs > 36) { fs -= 2; hook.style.fontSize = fs + 'px'; }
+      // 그래도 넘치면 카드 글자도 줄임
+      let cs = 15;
+      while (col.scrollHeight > col.clientHeight + 1 && cs > 12) { cs -= 0.5; col.querySelector('.cx-cards').style.fontSize = cs + 'px'; }
     });
     document.querySelectorAll('.kpi b, .mc-n').forEach((n) => {
       let fs = parseFloat(getComputedStyle(n).fontSize);
