@@ -124,36 +124,38 @@ ul { list-style: none; padding: 0; }
 .hl-l { margin-top: 8px; font-size: 14px; color: var(--muted); }
 .hl-t { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 18px; font-weight: 700; letter-spacing: -0.02em; }
 
-/* ── 핵심 케이스 (1쪽): 헤드라인 · KPI · Issue/Action · 대표 이미지 ── */
-.cx { display: grid; grid-template-columns: 690px minmax(0, 1fr); gap: 48px; height: 100%; }
-.cx-l { display: flex; flex-direction: column; min-height: 0; }
+/* ── 핵심 케이스 (1쪽): 헤드라인 → Action 카드 3개 → Result 바 · 오른쪽 대표 이미지 ── */
+.cx { display: grid; grid-template-columns: 880px minmax(0, 1fr); gap: 40px; height: 100%; }
+.cx-l { position: relative; display: flex; flex-direction: column; min-height: 0; }
 .cx-top { display: flex; align-items: center; gap: 12px; }
 .pill { padding: 6px 14px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 13px; font-weight: 600; }
 .cx-name { font-size: 16px; font-weight: 600; color: var(--muted); letter-spacing: -0.01em; }
-.cx-hook { margin-top: 22px; font-size: 52px; font-weight: 800; line-height: 1.2; letter-spacing: -0.055em; }
+.cx-hook { margin-top: 18px; font-size: 50px; font-weight: 800; line-height: 1.18; letter-spacing: -0.055em; }
 .cx-hook em { font-style: normal; color: var(--pen); }
-.cx-lead { margin-top: 16px; font-size: 17px; font-weight: 500; line-height: 1.6; letter-spacing: -0.02em; color: #3b3a36; }
-.kpis { margin-top: 24px; padding: 20px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--line); display: flex; }
-.kpi { flex: 1; padding: 0 22px; border-left: 1px solid var(--line); }
-.kpi:first-child { padding-left: 0; border-left: 0; }
-.kpi b { display: block; font-family: var(--display); font-size: 46px; font-weight: 600; line-height: 1; letter-spacing: -0.05em; white-space: nowrap; }
-.kpi span { display: block; margin-top: 10px; font-size: 14px; color: var(--muted); }
-.cx-cards { margin-top: 22px; display: grid; grid-template-columns: 1fr 1.6fr; gap: 14px; font-size: 15px; }
-.ic { border-radius: 18px; padding: 18px 20px; background: var(--sheet); }
-.ic.dark { background: #1f2333; color: #fff; }
-.ic-t { display: inline-block; margin-bottom: 12px; padding: 3px 10px; border-radius: 999px; background: var(--blue); color: var(--ink); font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
-.ic.dark .ic-t { background: var(--pink); }
-.ic p { font-size: 1em; font-weight: 500; line-height: 1.6; letter-spacing: -0.02em; color: #2b2a27; }
-.ic ol { margin: 0; padding: 0; list-style: none; counter-reset: a; }
-.ic li { counter-increment: a; display: flex; gap: 10px; padding: .32em 0; font-size: 1em; font-weight: 600; letter-spacing: -0.02em; }
-.ic li b { display: block; font-weight: 700; }
-.ic li small { display: block; margin-top: 2px; font-size: .84em; font-weight: 400; line-height: 1.45; color: #c4c8d6; }
-.ic li::before { content: counter(a, decimal-leading-zero); font-family: var(--mono); font-size: 11px; font-weight: 400; color: #9aa0b4; padding-top: 4px; }
-.cx-meta { margin-top: auto; display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; font-size: 13px; color: #3b3a36; }
+.cx-issue { margin-top: 18px; display: flex; align-items: center; gap: 12px; font-size: 17px; font-weight: 600; letter-spacing: -0.02em; color: #2b2a27; }
+.cx-issue b { padding: 4px 11px; border-radius: 999px; background: var(--blue); font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; }
+.acts { margin-top: auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.act { position: relative; background: var(--sheet); border-radius: 18px; padding: 0 20px 20px; box-shadow: 0 1px 0 rgba(0, 0, 0, .04); }
+.act-t { display: inline-block; padding: 7px 14px; border-radius: 0 0 10px 10px; background: #1f2333; color: #fff; font-size: 12.5px; font-weight: 700; letter-spacing: -0.01em; }
+.act h4 { margin-top: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--line); font-size: 21px; font-weight: 800; letter-spacing: -0.04em; color: var(--pen); }
+.act p { margin-top: 12px; font-size: 14.5px; line-height: 1.6; color: #4a4944; }
+/* 카드 → Result 연결선 (가운데 점 3개 + 가로선 + 세로선) */
+.act::after { content: ''; position: absolute; left: 50%; bottom: -7px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: var(--pen); box-shadow: 0 0 0 4px rgba(214, 72, 138, .2); }
+.link { position: relative; height: 34px; margin: 0 calc((100% - 32px) / 6); border: 1.5px solid var(--pen); border-top: 0; border-radius: 0 0 14px 14px; }
+.link::after { content: ''; position: absolute; left: 50%; top: 100%; width: 1.5px; height: 16px; background: var(--pen); }
+.result { margin-top: 16px; border-radius: 22px; padding: 22px 30px 22px; background: #1f2333; color: #fff; }
+.res-t { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--pink); }
+.res-k { margin-top: 10px; display: flex; }
+.res-k div { flex: 1; min-width: 0; padding: 0 22px; border-left: 1px solid rgba(255, 255, 255, .16); }
+.res-k div:first-child { padding-left: 0; border-left: 0; }
+.res-k b { display: block; font-family: var(--display); font-size: 46px; font-weight: 600; line-height: 1; letter-spacing: -0.05em; white-space: nowrap; }
+.res-k span { display: block; margin-top: 8px; font-size: 13.5px; color: #b9bdcc; }
+.res-line { margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, .14); font-size: 17px; font-weight: 600; letter-spacing: -0.02em; }
+.cx-r { min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 12px; }
+.cx-r .vis { flex: 1; border-radius: 22px; }
+.cx-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; font-size: 12.5px; color: #3b3a36; }
 .cx-meta span { margin-left: 8px; font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .cx-meta span:first-child { margin-left: 0; }
-.cx-r { min-width: 0; min-height: 0; display: flex; }
-.cx-r .vis { height: 100%; flex: 1; border-radius: 22px; }
 .vis { position: relative; flex: 1; min-width: 0; min-height: 0; border-radius: 16px; overflow: hidden; background: var(--paper); }
 .vis > img { width: 100%; height: 100%; object-fit: cover; }
 .vis > img.contain { object-fit: contain; }

@@ -145,23 +145,27 @@
   const hookHTML = (t) => esc(t).replace(/\*(.+?)\*/g, '<em>$1</em>').replace(/\n/g, '<br>');
 
   keys.forEach((p, k) => {
-    const im = { ...(IMP[p.slug] || {}), ...((window.PDF_STORY || {})[p.slug] || {}) };
+    const im = { ...(IMP[p.slug] || {}), ...((window.PDF_CASE || {})[p.slug] || {}) };
     const kpi = (im.kpi || (p.results || []).map((r) => [r.n, r.l])).slice(0, 3);
+    const nl = (t) => esc(t).replace(/\n/g, '<br>');
     projPage[p.slug] = add(`
       ${tabs([[`Case ${pad(k + 1)}`, 'mono'], [esc(p.brand || p.company), toneOf(p)], [esc(p.year), 'pink']])}
       <div class="sheet"><div class="cx">
         <div class="cx-l">
           <div class="cx-top"><span class="pill">${esc(p.company)}</span><span class="cx-name">${esc(p.title)}</span></div>
           <h2 class="cx-hook">${hookHTML(im.hook || p.headline)}</h2>
-          ${im.lead ? `<p class="cx-lead">${esc(im.lead)}</p>` : ''}
-          <div class="kpis">${kpi.map(([n, l]) => `<div class="kpi"><b>${esc(n)}</b><span>${esc(l)}</span></div>`).join('')}</div>
-          <div class="cx-cards">
-            <div class="ic"><span class="ic-t">Issue</span><p>${esc(im.issue || p.why || '')}</p></div>
-            <div class="ic dark"><span class="ic-t">Action</span><ol>${(im.action || []).map((x) => Array.isArray(x) ? `<li><span><b>${esc(x[0])}</b><small>${esc(x[1])}</small></span></li>` : `<li>${esc(x)}</li>`).join('')}</ol></div>
+          <p class="cx-issue"><b>Issue</b>${esc(im.issue || '')}</p>
+          <div class="acts">${(im.actions || []).map(([t, d], i) => `
+            <div class="act"><span class="act-t">Action ${i + 1}</span><h4>${esc(t)}</h4><p>${nl(d)}</p></div>`).join('')}
           </div>
-          <div class="cx-meta"><span>Role</span>${esc(p.role)}<span>Period</span>${esc(p.period)}</div>
+          <div class="link" aria-hidden="true"></div>
+          <div class="result">
+            <span class="res-t">Result</span>
+            <div class="res-k">${kpi.map(([n, l]) => `<div><b>${esc(n)}</b><span>${esc(l)}</span></div>`).join('')}</div>
+            ${im.result ? `<p class="res-line">${esc(im.result)}</p>` : ''}
+          </div>
         </div>
-        <div class="cx-r">${coverHTML(p)}</div>
+        <div class="cx-r">${coverHTML(p)}<div class="cx-meta"><span>Role</span>${esc(p.role)}<span>Period</span>${esc(p.period)}</div></div>
       </div></div>`);
   });
 
@@ -236,13 +240,10 @@
     // 왼쪽 칸이 넘치면 헤드라인을 줄이고, 칸보다 긴 숫자는 글자를 줄임
     document.querySelectorAll('.cx-l').forEach((col) => {
       const hook = col.querySelector('.cx-hook');
-      let fs = 52;
+      let fs = 50;
       while (col.scrollHeight > col.clientHeight + 1 && fs > 36) { fs -= 2; hook.style.fontSize = fs + 'px'; }
-      // 그래도 넘치면 카드 글자도 줄임
-      let cs = 15;
-      while (col.scrollHeight > col.clientHeight + 1 && cs > 12) { cs -= 0.5; col.querySelector('.cx-cards').style.fontSize = cs + 'px'; }
     });
-    document.querySelectorAll('.kpi b, .mc-n').forEach((n) => {
+    document.querySelectorAll('.res-k b, .mc-n').forEach((n) => {
       let fs = parseFloat(getComputedStyle(n).fontSize);
       while (n.scrollWidth > n.clientWidth + 1 && fs > 22) { fs -= 1; n.style.fontSize = fs + 'px'; }
     });
