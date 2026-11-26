@@ -144,17 +144,27 @@
   // *강조* → 강조색, 줄바꿈 유지
   const hookHTML = (t) => esc(t).replace(/\*(.+?)\*/g, '<em>$1</em>').replace(/\n/g, '<br>');
 
-  keys.forEach((p, k) => {
-    const im = { ...(IMP[p.slug] || {}), ...((window.PDF_CASE || {})[p.slug] || {}) };
-    const kpi = (im.kpi || (p.results || []).map((r) => [r.n, r.l])).slice(0, 3);
-    const nl = (t) => esc(t).replace(/\n/g, '<br>');
-    projPage[p.slug] = add(`
-      ${tabs([[`Case ${pad(k + 1)}`, 'mono'], [esc(p.brand || p.company), toneOf(p)], [esc(p.year), 'pink']])}
-      <div class="sheet"><div class="cx">
+  const nl = (t) => esc(t).replace(/\n/g, '<br>');
+  const oneLine = (t) => esc(t).replace(/\s*→\s*\n\s*|\s*\n\s*→\s*/g, ' → ').replace(/\s*\n\s*\+\s*/g, ' + ').replace(/\n/g, ' · ');
+  const meta = (p) => `<div class="cx-meta"><span>Role</span>${esc(p.role)}<span>Period</span>${esc(p.period)}</div>`;
+  const top = (p) => `<div class="cx-top"><span class="pill">${esc(p.company)}</span><span class="cx-name">${esc(p.title)}</span></div>`;
+  const issue = (im) => `<p class="cx-issue"><b>Issue</b>${esc(im.issue || '')}</p>`;
+  // 작업물 이미지 (대표 이미지 제외, 사진만)
+  const extraImgs = (p, n) => {
+    const c = p.cover, used = new Set((c.videos || c.imgs || (c.src ? [c.src] : [])));
+    return [...(p.showcase ? p.showcase.items.map((m) => m.video || m.img) : []), ...(p.gallery || []).filter((g) => g.img).map((g) => g.img)]
+      .filter((x) => !used.has(x)).slice(0, n);
+  };
+
+  // 레이아웃 4가지 — 쪽마다 섞어서 단조롭지 않게
+  const LAYOUT = {
+    // 헤드라인 → Action 카드 3개 → Result 바 · 오른쪽 대표 이미지
+    cards: (p, im, kpi) => `
+      <div class="cx">
         <div class="cx-l">
-          <div class="cx-top"><span class="pill">${esc(p.company)}</span><span class="cx-name">${esc(p.title)}</span></div>
+          ${top(p)}
           <h2 class="cx-hook">${hookHTML(im.hook || p.headline)}</h2>
-          <p class="cx-issue"><b>Issue</b>${esc(im.issue || '')}</p>
+          ${issue(im)}
           <div class="acts">${(im.actions || []).map(([t, d], i) => `
             <div class="act"><span class="act-t">Action ${i + 1}</span><h4>${esc(t)}</h4><p>${nl(d)}</p></div>`).join('')}
           </div>
@@ -165,8 +175,68 @@
             ${im.result ? `<p class="res-line">${esc(im.result)}</p>` : ''}
           </div>
         </div>
-        <div class="cx-r">${coverHTML(p)}<div class="cx-meta"><span>Role</span>${esc(p.role)}<span>Period</span>${esc(p.period)}</div></div>
-      </div></div>`);
+        <div class="cx-r">${coverHTML(p)}${meta(p)}</div>
+      </div>`,
+    // 왼쪽 색 패널에 대표 숫자를 크게 · 오른쪽 헤드라인 + 이미지 + Action 3열
+    stat: (p, im, kpi, tone) => `
+      <div class="st">
+        <div class="st-panel ${tone}">
+          ${top(p)}
+          <div class="st-big">${esc(kpi[0][0])}</div>
+          <div class="st-lab">${esc(kpi[0][1])}</div>
+          <div class="st-sub">${kpi.slice(1).map(([n, l]) => `<div><b>${esc(n)}</b><span>${esc(l)}</span></div>`).join('')}</div>
+          ${im.result ? `<p class="st-res">→ ${esc(im.result)}</p>` : ''}
+        </div>
+        <div class="st-main">
+          <h2 class="cx-hook sm">${hookHTML(im.hook || p.headline)}</h2>
+          ${issue(im)}
+          <div class="st-img">${p.cover.type === 'text' && extraImgs(p, 1).length ? `<div class="vis"><img class="contain" src="${img(extraImgs(p, 1)[0])}" alt=""></div>` : coverHTML(p)}</div>
+          <div class="st-acts">${(im.actions || []).map(([t, d], i) => `
+            <div><span class="num">${pad(i + 1)}</span><h4>${esc(t)}</h4><p>${nl(d)}</p></div>`).join('')}
+          </div>
+          ${meta(p)}
+        </div>
+      </div>`,
+    // 왼쪽 큰 이미지 · 오른쪽 헤드라인 + 01·02·03 단계 + 숫자
+    split: (p, im, kpi, tone) => `
+      <div class="sp">
+        <div class="sp-img ${tone}">${coverHTML(p)}</div>
+        <div class="sp-main">
+          ${top(p)}
+          <h2 class="cx-hook sm">${hookHTML(im.hook || p.headline)}</h2>
+          ${issue(im)}
+          <ol class="sp-steps">${(im.actions || []).map(([t, d], i) => `
+            <li><span class="num">${pad(i + 1)}</span><div><h4>${esc(t)}</h4><p>${oneLine(d)}</p></div></li>`).join('')}
+          </ol>
+          <div class="sp-k">${kpi.map(([n, l]) => `<div><b>${esc(n)}</b><span>${esc(l)}</span></div>`).join('')}</div>
+          ${meta(p)}
+        </div>
+      </div>`,
+    // 위: 헤드라인 + 숫자 · 가운데: 작업물 이미지 여러 장 · 아래: Issue → Action 흐름
+    gallery: (p, im, kpi) => {
+      const imgs = extraImgs(p, 5);
+      return `
+      <div class="gl">
+        <div class="gl-head">
+          <div>${top(p)}<h2 class="cx-hook sm">${hookHTML(im.hook || p.headline)}</h2></div>
+          <div class="gl-k">${kpi.map(([n, l]) => `<div><b>${esc(n)}</b><span>${esc(l)}</span></div>`).join('')}</div>
+        </div>
+        <div class="strip" style="grid-template-columns:repeat(${imgs.length},minmax(0,1fr))">${imgs.map((x) => `<div class="cell"><img src="${img(x)}" alt="" data-phone></div>`).join('')}</div>
+        <div class="flow">
+          <div class="fl issue"><span>Issue</span><p>${esc(im.issue || '')}</p></div>
+          ${(im.actions || []).map(([t, d], i) => `<i aria-hidden="true">→</i><div class="fl"><span>Action ${i + 1}</span><h4>${esc(t)}</h4><p>${oneLine(d)}</p></div>`).join('')}
+        </div>
+      </div>`;
+    },
+  };
+
+  keys.forEach((p, k) => {
+    const im = { ...(IMP[p.slug] || {}), ...((window.PDF_CASE || {})[p.slug] || {}) };
+    const kpi = (im.kpi || (p.results || []).map((r) => [r.n, r.l])).slice(0, 3);
+    const lay = LAYOUT[im.layout] || LAYOUT.cards;
+    projPage[p.slug] = add(`
+      ${tabs([[`Case ${pad(k + 1)}`, 'mono'], [esc(p.brand || p.company), toneOf(p)], [esc(p.year), 'pink']])}
+      <div class="sheet">${lay(p, im, kpi, toneOf(p))}</div>`);
   });
 
   // 그 밖의 프로젝트: 카드 모음 (이미지 + 큰 숫자 + 한 줄)
@@ -238,12 +308,16 @@
       facts.style.paddingTop = target - h4.getBoundingClientRect().top + 'px';
     });
     // 왼쪽 칸이 넘치면 헤드라인을 줄이고, 칸보다 긴 숫자는 글자를 줄임
-    document.querySelectorAll('.cx-l').forEach((col) => {
+    document.querySelectorAll('.strip .cell .phone').forEach((ph) => {
+      const c = ph.parentElement;
+      ph.style.height = Math.min(c.clientHeight, c.clientWidth * 19 / 9) + 'px';
+    });
+    document.querySelectorAll('.cx-l, .st-main, .sp-main').forEach((col) => {
       const hook = col.querySelector('.cx-hook');
-      let fs = 50;
+      let fs = parseFloat(getComputedStyle(hook).fontSize);
       while (col.scrollHeight > col.clientHeight + 1 && fs > 36) { fs -= 2; hook.style.fontSize = fs + 'px'; }
     });
-    document.querySelectorAll('.res-k b, .mc-n').forEach((n) => {
+    document.querySelectorAll('.res-k b, .mc-n, .st-big, .st-sub b, .sp-k b, .gl-k b').forEach((n) => {
       let fs = parseFloat(getComputedStyle(n).fontSize);
       while (n.scrollWidth > n.clientWidth + 1 && fs > 22) { fs -= 1; n.style.fontSize = fs + 'px'; }
     });
